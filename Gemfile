@@ -3,7 +3,10 @@ source 'https://rubygems.org'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.0.beta1'
 gem 'foreman'
-gem 'puma'
+gem 'puma', '2.0.0.b7'
+gem 'websocket', :github => 'imanel/websocket-ruby'
+gem 'quiet_assets'
+gem 'redis'
 
 gem 'sqlite3'
 

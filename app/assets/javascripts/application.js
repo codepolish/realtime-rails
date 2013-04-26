@@ -14,3 +14,33 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+//= require_self
+
+$(function() {
+  ws = new WebSocket('ws://localhost:3000/chat')
+  ws.onopen = function (event) {
+    $('#chat').append('<li>New Chat!</li>');
+  };
+  ws.onclose = function (event) {
+    $('#chat').append('<li>Chat Over!</li>');
+  };
+  ws.onmessage = function (event) {
+    $('#chat').append('<li>'+event.data+'</li>');
+  };
+
+  var sendMessage = function () {
+    if ($('#message').val() != '') {
+      ws.send($('#message').val());
+      $('#message').val('');
+    }
+  }
+
+  $('button').click(function(e) {
+    sendMessage();
+  });
+  $('#message').keypress(function(e) {
+    if (e.charCode == 13) {
+      sendMessage();
+    }
+  });
+});
