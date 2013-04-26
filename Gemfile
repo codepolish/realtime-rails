@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.0.beta1'
+gem 'foreman'
+gem 'puma'
 
 gem 'sqlite3'
 
@@ -15,6 +17,10 @@ group :assets do
   # gem 'therubyracer', platforms: :ruby
 
   gem 'uglifier', '>= 1.0.3'
+end
+
+group :development do
+  gem 'capistrano'
 end
 
 gem 'jquery-rails'
