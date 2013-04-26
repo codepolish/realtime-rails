@@ -17,7 +17,7 @@
 //= require_self
 
 $(function() {
-  ws = new WebSocket('ws://'+window.location.hostname+':'+window.location.port+'/chat')
+  ws = new WebSocket('ws://'+window.location.hostname+':'+(parseInt(window.location.port, 10) || 80)+'/chat')
   ws.onopen = function (event) {
     $('#chat').append('<li>New Chat!</li>');
   };
