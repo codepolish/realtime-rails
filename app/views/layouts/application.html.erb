@@ -17,11 +17,16 @@
     {{else}}
       Off
     {{/if}}
-    {{input value=chat action=send}}
-    <button {{action send}}>Send</button>
+    {{#if connected}}
+      {{input value=chat action=submitMessage}}
+      <button {{action submitMessage}}>Send</button>
+    {{else}}
+      {{input value=username action=connect placeholder="Choose a username"}}
+      <button {{action connect}}>Connect</button>
+    {{/if}}
     <ul>
     {{#each entry in log}}
-      <li>{{entry}}</li>
+      <li>{{entry.from}}: {{entry.message}}</li>
     {{/each}}
     </ul>
   </script>

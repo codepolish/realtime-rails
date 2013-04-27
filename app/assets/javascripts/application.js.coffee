@@ -10,24 +10,32 @@ App.IndexController = Ember.Controller.extend
   init: ->
     @_super()
     @set('log', [])
-    @setupSocket()
 
   setupSocket: ->
     socket = new WebSocket("ws://#{window.location.host}/chat")
     socket.onopen = =>
-      @addToLog('Connected!')
+      @sendMessage({username: @get('username')})
       @set('connected', true)
     socket.onclose = =>
-      @addToLog('Disconnected!')
+      @addToLog({from: 'SYSTEM', message: 'Disconnected!'})
       @set('connected', false)
     socket.onmessage = (event) =>
-      @addToLog(event.data)
+      @addToLog(JSON.parse(event.data))
     @set('socket', socket)
 
-  send: ->
-    if !Ember.isNone(@get('chat'))
-      @get('socket').send(@get('chat'))
+  connect: ->
+    if !Ember.isEmpty(@get('username'))
+      @setupSocket()
+    else
+      window.alert('Please choose a username!')
+
+  sendMessage: (json) ->
+    @get('socket').send(JSON.stringify(json))
+
+  submitMessage: ->
+    if !Ember.isEmpty(@get('chat'))
+      @sendMessage({message: @get('chat')})
       @set('chat', undefined)
 
-  addToLog: (message) ->
-    @set('log', @get('log').concat(message))
+  addToLog: (data) ->
+    @set('log', @get('log').concat(data))

@@ -18,17 +18,23 @@ class ChatController < ApplicationController
       end
     end
 
-    pubRedis.publish('broadcast', 'New User Connected!')
-
     Thread.new do
       buffer = WebSocket::Frame::Incoming::Server.new(version: handshake.version)
       while !socket.closed? do
         data = socket.recvfrom(2000).first
         buffer << data
         while frame = buffer.next
-          pubRedis.publish('broadcast', frame.data)
+          data = JSON.parse(frame.data) rescue {}
+          if data['username']
+            @username = data['username']
+            pubRedis.publish('broadcast', JSON.dump({:from => 'SYSTEM', :message => "#{@username} has joined"}))
+          end
+          if data['message']
+            pubRedis.publish('broadcast', JSON.dump({:from => @username, :message => data['message']}))
+          end
         end
       end
+      pubRedis.pubish('broadcast', JSON.dump({:from => 'system', :message => "#{@username} has disconnected"}))
       subRedis.unsubscribe('broadcast')
     end
     render :nothing => :true, :status => :ok
