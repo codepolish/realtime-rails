@@ -6,10 +6,18 @@
 
 window.App = Ember.Application.create()
 
-App.IndexController = Ember.Controller.extend
+App.Router.map ->
+  this.route 'chat'
+
+App.ChatController = Ember.Controller.extend
   init: ->
     @_super()
     @set('log', [])
+    @getUsername()
+    @setupSocket()
+
+  getUsername: ->
+    @set('username', prompt('Please choose a username') || 'Anonymous coward')
 
   setupSocket: ->
     socket = new WebSocket("ws://#{window.location.host}/chat")
@@ -17,7 +25,7 @@ App.IndexController = Ember.Controller.extend
       @sendMessage({username: @get('username')})
       @set('connected', true)
     socket.onclose = =>
-      @addToLog({from: 'SYSTEM', message: 'Disconnected!'})
+      @addToLog({from: 'Channel Notice', message: 'Disconnected!'})
       @set('connected', false)
     socket.onmessage = (event) =>
       @addToLog(JSON.parse(event.data))

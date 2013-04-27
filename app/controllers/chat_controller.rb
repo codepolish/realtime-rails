@@ -27,14 +27,14 @@ class ChatController < ApplicationController
           data = JSON.parse(frame.data) rescue {}
           if data['username']
             @username = data['username']
-            pubRedis.publish('broadcast', JSON.dump({:from => 'SYSTEM', :message => "#{@username} has joined"}))
+            pubRedis.publish('broadcast', JSON.dump({:from => 'Channel Notice', :message => "#{@username} has joined"}))
           end
           if data['message']
             pubRedis.publish('broadcast', JSON.dump({:from => @username, :message => data['message']}))
           end
         end
       end
-      pubRedis.pubish('broadcast', JSON.dump({:from => 'system', :message => "#{@username} has disconnected"}))
+      pubRedis.pubish('broadcast', JSON.dump({:from => 'Channel Notice', :message => "#{@username} has disconnected"}))
       subRedis.unsubscribe('broadcast')
     end
     render :nothing => :true, :status => :ok

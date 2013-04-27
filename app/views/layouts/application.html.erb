@@ -8,27 +8,36 @@
 </head>
 <body>
   <script type='text/x-handlebars'>
-    {{outlet}}
+    <div class="container">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <a class="brand" href="http://dockyard.com">DockYard</a>
+          <ul class="nav">
+            <li>{{#linkTo chat}}Chat{{/linkTo}}</li>
+            <li><a href="#">Draw</a></li>
+          </ul>
+        </div>
+      </div> 
+      {{outlet}}
+    </div>
   </script>
-  <script type='text/x-handlebars' id="index">
-    Connection:
-    {{#if connected}}
-      On
-    {{else}}
-      Off
-    {{/if}}
-    {{#if connected}}
-      {{input value=chat action="submitMessage"}}
-      <button {{action submitMessage}}>Send</button>
-    {{else}}
-      {{input value=username action="connect" placeholder="Choose a username"}}
-      <button {{action connect}}>Connect</button>
-    {{/if}}
-    <ul>
-    {{#each entry in log}}
-      <li>{{entry.from}}: {{entry.message}}</li>
-    {{/each}}
-    </ul>
+  <script type='text/x-handlebars' id="chat">
+    <div id="chat-log">
+      <table class="table table-striped">
+      {{#each entry in log}}
+        <tr>
+          <td>{{entry.from}}</td>
+          <td>{{entry.message}}</td>
+        </tr>
+      {{/each}}
+      </table>
+    </div>
+    <div class="navbar navbar-fixed-bottom">
+      <div class="input-prepend">
+        <span class="add-on">{{username}}</span>
+        {{input value=chat action="submitMessage"}}
+      </div>
+    </div>
   </script>
 </body>
 </html>
