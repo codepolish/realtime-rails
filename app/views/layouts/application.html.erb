@@ -18,10 +18,10 @@
       Off
     {{/if}}
     {{#if connected}}
-      {{input value=chat action=submitMessage}}
+      {{input value=chat action="submitMessage"}}
       <button {{action submitMessage}}>Send</button>
     {{else}}
-      {{input value=username action=connect placeholder="Choose a username"}}
+      {{input value=username action="connect" placeholder="Choose a username"}}
       <button {{action connect}}>Connect</button>
     {{/if}}
     <ul>
