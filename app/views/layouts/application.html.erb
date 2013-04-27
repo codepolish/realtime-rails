@@ -2,13 +2,28 @@
 <html>
 <head>
   <title>RealtimeRails</title>
-  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
-  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= stylesheet_link_tag    "application", media: "all" %>
+  <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-<%= yield %>
-
+  <script type='text/x-handlebars'>
+    {{outlet}}
+  </script>
+  <script type='text/x-handlebars' id="index">
+    Connection:
+    {{#if connected}}
+      On
+    {{else}}
+      Off
+    {{/if}}
+    {{input value=chat action=send}}
+    <button {{action send}}>Send</button>
+    <ul>
+    {{#each entry in log}}
+      <li>{{entry}}</li>
+    {{/each}}
+    </ul>
+  </script>
 </body>
 </html>

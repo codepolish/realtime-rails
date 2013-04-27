@@ -24,6 +24,7 @@ end
 
 group :development do
   gem 'capistrano'
+  gem 'debugger'
 end
 
 gem 'jquery-rails'
