@@ -8,8 +8,7 @@ class ChatController < ApplicationController
     socket.write handshake.to_s
     subRedis = Redis.new :timeout => 0
     pubRedis = Redis.new
-    Thread.new do
-      subRedis = Redis.new :timeout => 0
+    subThread = Thread.new do
       subRedis.subscribe('broadcast') do |on|
         on.message do |channel, msg|
           frame = WebSocket::Frame::Outgoing::Server.new(version: handshake.version, type: 'text', data: msg)
@@ -40,6 +39,7 @@ class ChatController < ApplicationController
       end
       pubRedis.publish('broadcast', JSON.dump({:notice  => "#{@username} has disconnected"}))
       subRedis.unsubscribe('broadcast')
+      subThread.kill
     end
     render :nothing => :true, :status => :ok
   end
