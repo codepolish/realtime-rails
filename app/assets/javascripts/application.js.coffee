@@ -9,6 +9,10 @@ window.App = Ember.Application.create()
 App.Router.map ->
   this.route 'chat'
 
+App.TextField = Ember.TextField.extend
+  didInsertElement: ->
+    @$().focus()
+
 App.ChatController = Ember.Controller.extend
   init: ->
     @_super()
@@ -25,10 +29,12 @@ App.ChatController = Ember.Controller.extend
       @sendMessage({username: @get('username')})
       @set('connected', true)
     socket.onclose = =>
-      @addToLog({from: 'Channel Notice', message: 'Disconnected!'})
+      @addToLog({notice: 'You have been disconnected!'})
       @set('connected', false)
     socket.onmessage = (event) =>
       @addToLog(JSON.parse(event.data))
+    Ember.$(window).unload ->
+      socket.close()
     @set('socket', socket)
 
   connect: ->

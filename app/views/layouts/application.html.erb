@@ -9,7 +9,7 @@
 <body>
   <script type='text/x-handlebars'>
     <div class="container">
-      <div class="navbar">
+      <div class="navbar navbar-inverse">
         <div class="navbar-inner">
           <a class="brand" href="http://dockyard.com">DockYard</a>
           <ul class="nav">
@@ -22,20 +22,30 @@
     </div>
   </script>
   <script type='text/x-handlebars' id="chat">
-    <div id="chat-log">
-      <table class="table table-striped">
-      {{#each entry in log}}
-        <tr>
-          <td>{{entry.from}}</td>
-          <td>{{entry.message}}</td>
-        </tr>
-      {{/each}}
-      </table>
-    </div>
-    <div class="navbar navbar-fixed-bottom">
-      <div class="input-prepend">
-        <span class="add-on">{{username}}</span>
-        {{input value=chat action="submitMessage"}}
+    <div class="container">
+      <div id="chat-log">
+        <table class="table">
+        {{#each entry in log}}
+          {{#if entry.notice}}
+            <tr class="info">
+              <td>{{entry.notice}}</td>
+            </tr>
+          {{else}}
+            <tr>
+              <td>
+                <span class="from">{{entry.from}}</span>
+                {{entry.message}}
+              </td>
+            </tr>
+          {{/if}}
+        {{/each}}
+        </table>
+      </div>
+      <div class="navbar navbar-fixed-bottom">
+        <div class="input-prepend">
+          <span class="add-on">{{username}}</span>
+          {{view App.TextField valueBinding="chat" action="submitMessage"}}
+        </div>
       </div>
     </div>
   </script>
