@@ -8,6 +8,7 @@ window.App = Ember.Application.create()
 
 App.Router.map ->
   this.route 'chat'
+  this.route 'draw'
 
 App.TextField = Ember.TextField.extend
   didInsertElement: ->
