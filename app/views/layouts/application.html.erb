@@ -9,7 +9,7 @@
 <body>
   <script type='text/x-handlebars'>
     <div class="container">
-      <div class="navbar navbar-inverse">
+      <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
           <a class="brand" href="http://dockyard.com">DockYard</a>
           <ul class="nav">
@@ -23,23 +23,34 @@
   </script>
   <script type='text/x-handlebars' id="chat">
     <div class="container">
-      <div id="chat-log">
-        <table class="table">
-        {{#each entry in log}}
-          {{#if entry.notice}}
-            <tr class="info">
-              <td>{{entry.notice}}</td>
-            </tr>
-          {{else}}
-            <tr>
-              <td>
-                <span class="from">{{entry.from}}</span>
-                {{entry.message}}
-              </td>
-            </tr>
-          {{/if}}
-        {{/each}}
-        </table>
+      <div id="chat-window" class="row">
+        <div class="span8">
+          <table class="table">
+          {{#each entry in log}}
+            {{#if entry.notice}}
+              <tr class="info">
+                {{#view App.TableCell}}
+                  {{entry.notice}}
+                {{/view}}
+              </tr>
+            {{else}}
+              <tr>
+                {{#view App.TableCell}}
+                  <span class="from">{{entry.from}}</span>
+                  {{entry.message}}
+                {{/view}}
+              </tr>
+            {{/if}}
+          {{/each}}
+          </table>
+        </div>
+        <div class="span4">
+          <ul>
+            {{#each member in members}}
+              <li>{{member}}</li>
+            {{/each}}
+          </ul>
+        </div>
       </div>
       <div class="navbar navbar-fixed-bottom">
         <div class="input-prepend">
@@ -50,7 +61,8 @@
     </div>
   </script>
   <script type='text/x-handlebars' id='draw'>
-    <h2>Not done yet!</h2>
+    {{view App.CanvasView id="draw"}}
+    <span id="location"></span>
   </script>
 </body>
 </html>
