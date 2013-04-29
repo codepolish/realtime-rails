@@ -22,28 +22,33 @@ class ChatController < ApplicationController
         data = socket.recvfrom(2000).first
         buffer << data
         while frame = buffer.next do
-          log_items = []
           if frame.type == :close
             socket.close
           else
             data = JSON.parse(frame.data) rescue {}
             if data['username']
+              item = JSON.dump({:members => pubRedis.hgetall('chat-members').map { |e| {user_id: e.first, username: e.last}}})
+              frame = WebSocket::Frame::Outgoing::Server.new(version: handshake.version, type: 'text', data: item)
+              socket.write frame.to_s
+              item = JSON.dump({:log => pubRedis.lrange('chat-log', 0, pubRedis.llen('chat-log')).map { |e| JSON.parse(e) }})
+              frame = WebSocket::Frame::Outgoing::Server.new(version: handshake.version, type: 'text', data: item)
+              socket.write frame.to_s
               @username = data['username']
               pubRedis.hset('chat-members', user_id, @username)
-              log_items << JSON.dump({:add => true, :member => { :user_id => user_id, :username => @username }})
-              log_items << JSON.dump({:members => pubRedis.hget('chat-members')})
+              item = JSON.dump({:add => true, :member => { :user_id => user_id, :username => @username }})
+              pubRedis.publish('chat-broadcast', item)
             end
             if data['message']
-              log_items << JSON.dump({:from => @username, :message => data['message']})
-            end
-            while log_items.present?
-              pubRedis.publish('chat-broadcast', log_items.pop)
+              item =  JSON.dump({:from => @username, :message => data['message']})
+              pubRedis.rpush('chat-log', item)
+              pubRedis.publish('chat-broadcast', item)
             end
           end
         end
       end
       pubRedis.hdel('chat-members', user_id)
       pubRedis.publish('chat-broadcast', JSON.dump({:remove => true, :member => { :user_id => user_id, :username => @username }}))
+      pubRedis.rpush('chat-log', JSON.dump({notice: "#{@username} has disconnected"}))
       subRedis.unsubscribe('chat-broadcast')
       subThread.kill
     end
