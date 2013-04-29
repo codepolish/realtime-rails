@@ -13,6 +13,7 @@
         <div class="navbar-inner">
           <a class="brand" href="http://dockyard.com">DockYard</a>
           <ul class="nav">
+            <li>{{#linkTo time}}Time{{/linkTo}}</li>
             <li>{{#linkTo chat}}Chat{{/linkTo}}</li>
             <li>{{#linkTo draw}}Draw{{/linkTo}}</li>
           </ul>
@@ -62,6 +63,13 @@
   </script>
   <script type='text/x-handlebars' id='draw'>
     {{view App.CanvasView id="draw"}}
+  </script>
+  <script type='text/x-handlebars' id='time'>
+    <div class="container">
+      <div class="time">
+        Current Time: {{content}}
+      </div>
+    </div>
   </script>
 </body>
 </html>

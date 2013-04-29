@@ -5,9 +5,11 @@
 #= require_self
 #= require chat
 #= require draw
+#= require time
 
 window.App = Ember.Application.create()
 
 App.Router.map ->
   this.route 'chat'
   this.route 'draw'
+  this.route 'time'
