@@ -47,7 +47,7 @@
         <div class="span4">
           <ul>
             {{#each member in members}}
-              <li>{{member}}</li>
+              <li>{{member.username}}</li>
             {{/each}}
           </ul>
         </div>
@@ -62,7 +62,6 @@
   </script>
   <script type='text/x-handlebars' id='draw'>
     {{view App.CanvasView id="draw"}}
-    <span id="location"></span>
   </script>
 </body>
 </html>

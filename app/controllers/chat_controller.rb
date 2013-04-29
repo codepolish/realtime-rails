@@ -6,6 +6,7 @@ class ChatController < ApplicationController
     socket.write handshake.to_s
     subRedis = Redis.new :timeout => 0
     pubRedis = Redis.new
+    user_id = pubRedis.incr('chat-connections')
     subThread = Thread.new do
       subRedis.subscribe('chat-broadcast') do |on|
         on.message do |channel, msg|
@@ -28,7 +29,9 @@ class ChatController < ApplicationController
             data = JSON.parse(frame.data) rescue {}
             if data['username']
               @username = data['username']
-              log_items << JSON.dump({:add => @username})
+              pubRedis.hset('chat-members', user_id, @username)
+              log_items << JSON.dump({:add => true, :member => { :user_id => user_id, :username => @username }})
+              log_items << JSON.dump({:members => pubRedis.hget('chat-members')})
             end
             if data['message']
               log_items << JSON.dump({:from => @username, :message => data['message']})
@@ -39,7 +42,8 @@ class ChatController < ApplicationController
           end
         end
       end
-      pubRedis.publish('chat-broadcast', JSON.dump({:remove => @username}))
+      pubRedis.hdel('chat-members', user_id)
+      pubRedis.publish('chat-broadcast', JSON.dump({:remove => true, :member => { :user_id => user_id, :username => @username }}))
       subRedis.unsubscribe('chat-broadcast')
       subThread.kill
     end

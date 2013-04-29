@@ -28,23 +28,25 @@ App.ChatController = Ember.Controller.extend
       @set('connected', false)
     socket.onmessage = (event) =>
       data = JSON.parse(event.data)
+      debugger
       if data.remove
-        @removeMember(data.remove)
+        @removeMember(data.member)
       else if data.add
-        @addMember(data.add)
+        @addMember(data.member)
       else
         @addToLog(data)
     Ember.$(window).unload ->
       socket.close()
     @set('socket', socket)
 
-  removeMember: (member) ->
+  removeMember: (data) ->
     @addToLog({notice: "#{member} has disconnected"})
-    @set('members', @get('members').without(member))
+    @set('members', @get('members').without(data))
 
-  addMember: (member) ->
+  addMember: (data) ->
     @addToLog({notice: "#{member} has joined"})
-    @set('members', @get('members').concat(member))
+    debugger
+    @set('members', @get('members').concat(data))
 
   connect: ->
     if !Ember.isEmpty(@get('username'))

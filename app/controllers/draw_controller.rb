@@ -6,7 +6,7 @@ class DrawController < ApplicationController
     socket.write handshake.to_s
     subRedis = Redis.new :timeout => 0
     pubRedis = Redis.new
-    user_id = pubRedis.incr('draw-connections')
+    user_id = "user-#{pubRedis.incr('draw-connections')}"
     subThread = Thread.new do
       subRedis.subscribe('draw-broadcast') do |on|
         on.message do |channel, msg|
@@ -15,6 +15,9 @@ class DrawController < ApplicationController
         end
       end
     end
+
+    frame = WebSocket::Frame::Outgoing::Server.new(version: handshake.version, type: 'text', data: JSON.dump({connect: user_id}))
+    socket.write frame.to_s
 
     Thread.new do
       buffer = WebSocket::Frame::Incoming::Server.new(version: handshake.version)
@@ -26,7 +29,7 @@ class DrawController < ApplicationController
             socket.close
           else
             data = JSON.parse(frame.data) rescue {}
-            pubRedis.publish('draw-broadcast', JSON.dump(data.merge(:user_id => "user-#{user_id}")))
+            pubRedis.publish('draw-broadcast', JSON.dump(data.merge(user_id: user_id)))
           end
         end
       end

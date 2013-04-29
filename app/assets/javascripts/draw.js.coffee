@@ -7,9 +7,9 @@ App.CanvasView = Ember.View.extend
   didInsertElement: ->
     @set('controller.canvasContext', @.$()[0].getContext('2d'))
   mouseMove: (event) ->
-    Ember.$('#location').text("X: #{event.offsetX}, Y: #{event.offsetY}")
     if @get('drawing')
       @get('controller.socket').send(JSON.stringify({newX: event.offsetX, newY: event.offsetY}))
+      @get('controller').send('drawLine', {user_id: @get('controller.user_id'), newX: event.offsetX, newY: event.offsetY})
   mouseDown: (event) ->
     @set('drawing', true)
   mouseUp: (event) ->
@@ -27,14 +27,16 @@ App.DrawController = Ember.Controller.extend
     socket.onopen = =>
       @set('connected', true)
     socket.onclose = =>
-      @addToLog({notice: 'You have been disconnected!'})
       @set('connected', false)
     socket.onmessage = (event) =>
       data = JSON.parse(event.data)
       if data.stopDrawing
         @stopDrawing(data.user_id)
+      else if data.connect
+        @set('user_id', data.connect)
       else
-        @drawLine(data)
+        unless data.user_id == @get('user_id')
+          @drawLine(data)
 
     Ember.$(window).unload ->
       socket.close()
